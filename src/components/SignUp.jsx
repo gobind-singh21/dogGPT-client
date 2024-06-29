@@ -8,9 +8,6 @@ const SignUp = () => {
 
     const { signup } = useContext(AuthContext);
     const [isLoading, setIsLoading] = useState(false);
-    const [imageFile, setImageFile] = useState(null);
-    const [imagePreview, setImagePreview] = useState(null)
-    const [showImageSelectPopup, setShowImageSelectPopup] = useState(false);
     const [errors, setErrors] = useState({
         userName: false,
         userEmail: false,
@@ -20,18 +17,6 @@ const SignUp = () => {
     const nameRef = useRef();
     const emailRef = useRef();
     const passwordRef = useRef();
-
-    const handleFileChange = (event) => {
-        const file = event.target.files[0];
-        setImageFile(file);
-        if (!file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            }
-            reader.readAsDataURL(file);
-        }
-    };
 
     const handleOnSignUp = (event) => {
         event.preventDefault();
@@ -48,20 +33,14 @@ const SignUp = () => {
         };
         setErrors(() => validationErrors);
         if (validationErrors.userName || validationErrors.userEmail || validationErrors.userPassword) {
-            if (!imageFile) {
-                setShowImageSelectPopup(true);
-                setTimeout(() => {
-                    setShowImageSelectPopup(false);
-                }, 1000);
-            }
             setIsLoading(false);
             return;
         }
-        const authFormData = new FormData();
-        authFormData.append('profileImage', imageFile);
-        authFormData.append('userName', userName);
-        authFormData.append('userEmail', userEmail);
-        authFormData.append('userPassword', userPassword);
+        const authFormData = {
+            userName,
+            userEmail,
+            userPassword
+        };
         signup(authFormData);
         nameRef.current.value = "";
         emailRef.current.value = "";
@@ -86,25 +65,6 @@ const SignUp = () => {
                 <input ref={passwordRef} autoComplete="off" type="password" className="form-control" id="floatingPassword" placeholder="Password" />
                 <label htmlFor="floatingPassword">Password*</label>
             </div>
-            <div className="mb-3">
-                <label
-                    htmlFor="formFile"
-                    className="form-label"
-                >
-                    Select your profile photo*
-                </label>
-                <input
-                    className="form-control"
-                    type="file"
-                    id="formFile"
-                    onChange={handleFileChange}
-                />
-            </div>
-            {imagePreview && (
-                <div className="mb-3">
-                    <img src={imagePreview} alt="Selected profile picture" style={{ maxHeight: "400px", width: "auto" }} />
-                </div>
-            )}
             <button className="btn btn-primary w-20 py-2" type="submit">Sign Up</button>
             <Link to="/login">Login to your account</Link>
         </form>
@@ -113,11 +73,6 @@ const SignUp = () => {
                 <Spinner animation="border" role="status">
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
-            </Modal.Body>
-        </Modal>
-        <Modal show={showImageSelectPopup} centered>
-            <Modal.Body className="text-center">
-                <h4>Please fill the required fields</h4>
             </Modal.Body>
         </Modal>
     </>

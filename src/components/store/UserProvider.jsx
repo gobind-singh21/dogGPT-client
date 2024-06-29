@@ -10,7 +10,6 @@ const AuthContext = createContext({
     login: () => { },
     signup: () => { },
     logout: () => { },
-    uploadProfilePicture: () => { }
 });
 
 const AuthProvider = ({ children }) => {
@@ -42,26 +41,11 @@ const AuthProvider = ({ children }) => {
         }
     }
 
-    const uploadProfilePicture = async (imageFormData) => {
-        try {
-            const res = await Axios.post("http://localhost:3000/profile/upload-profile-picture", imageFormData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            });
-            return res.status;
-        } catch (error) {
-            console.log(error);
-            alert("Error uploading profile picture");
-            return 400;
-        }
-    };
-
     const signup = async (authFormData) => {
         try {
             const res = await Axios.post("http://localhost:3000/auth/sign-up", authFormData, {
                 headers: {
-                    "Content-Type": "multipart/form-data"
+                    "Content-Type": "application/json"
                 }
             });
             console.log(res);
@@ -91,7 +75,6 @@ const AuthProvider = ({ children }) => {
         login,
         signup,
         logout,
-        uploadProfilePicture
     }}>
         {children}
         <Modal show={errorOccured} centered>
